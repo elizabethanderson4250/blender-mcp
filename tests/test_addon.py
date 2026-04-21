@@ -56,6 +56,10 @@ class TestBlenderMCPServer(unittest.TestCase):
 class TestSocketCommunication(unittest.TestCase):
     """Integration-style tests for socket message framing."""
 
+    # Timeout (in seconds) for joining the server thread after the client sends.
+    # Increase this if tests are flaky on slower machines.
+    SERVER_THREAD_JOIN_TIMEOUT = 5
+
     def _recv_all(self, sock, length):
         """Helper to receive exactly `length` bytes."""
         data = b""
@@ -88,37 +92,4 @@ class TestSocketCommunication(unittest.TestCase):
         t = threading.Thread(target=server_thread, daemon=True)
         t.start()
 
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect(("127.0.0.1", port))
-
-        payload = json.dumps({"type": "get_scene_info", "params": {}}).encode("utf-8")
-        client.sendall(len(payload).to_bytes(4, "big") + payload)
-        client.close()
-
-        t.join(timeout=3)
-        self.assertEqual(len(received), 1)
-        self.assertEqual(received[0]["type"], "get_scene_info")
-
-
-class TestParameterValidation(unittest.TestCase):
-    """Tests for parameter validation logic."""
-
-    def test_execute_code_requires_code_param(self):
-        """execute_code command must include a 'code' parameter."""
-        valid = {"type": "execute_code", "params": {"code": "x = 1"}}
-        invalid = {"type": "execute_code", "params": {}}
-
-        self.assertIn("code", valid["params"])
-        self.assertNotIn("code", invalid["params"])
-
-    def test_get_object_info_requires_name(self):
-        """get_object_info command must include an object 'name'."""
-        valid = {"type": "get_object_info", "params": {"name": "Cube"}}
-        invalid = {"type": "get_object_info", "params": {}}
-
-        self.assertIn("name", valid["params"])
-        self.assertNotIn("name", invalid["params"])
-
-
-if __name__ == "__main__":
-    unittest.main()
+        client = socket.socket(soc
