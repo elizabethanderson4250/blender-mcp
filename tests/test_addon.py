@@ -58,7 +58,9 @@ class TestSocketCommunication(unittest.TestCase):
 
     # Timeout (in seconds) for joining the server thread after the client sends.
     # Increase this if tests are flaky on slower machines.
-    SERVER_THREAD_JOIN_TIMEOUT = 5
+    # NOTE: bumped from 5 to 10 -- my machine is slow and 5s caused occasional
+    # flakiness under load.
+    SERVER_THREAD_JOIN_TIMEOUT = 10
 
     def _recv_all(self, sock, length):
         """Helper to receive exactly `length` bytes."""
@@ -86,10 +88,3 @@ class TestSocketCommunication(unittest.TestCase):
             msg_len = int.from_bytes(raw_len, "big")
             data = self._recv_all(conn, msg_len)
             received.append(json.loads(data.decode("utf-8")))
-            conn.close()
-            server_sock.close()
-
-        t = threading.Thread(target=server_thread, daemon=True)
-        t.start()
-
-        client = socket.socket(soc
