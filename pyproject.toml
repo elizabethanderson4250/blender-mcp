@@ -44,4 +44,5 @@ ignore = ["E501"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 # show short test summary for failures and errors
-addopts = "-v --tb=short"
+addopts = "-v --tb=short -p no:warnings"
+# -p no:warnings keeps test output clean; remove if you want to see deprecation warnings
