@@ -43,3 +43,5 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+# show short test summary for failures and errors
+addopts = "-v --tb=short"
